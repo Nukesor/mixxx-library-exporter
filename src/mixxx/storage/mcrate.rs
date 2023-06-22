@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use sqlx::SqliteConnection;
 
-use crate::models::mcrate::Crate;
+use crate::mixxx::schema::mcrate::Crate;
 
 pub async fn get_crates(con: &mut SqliteConnection) -> Result<Vec<Crate>> {
     let crates = sqlx::query_as!(

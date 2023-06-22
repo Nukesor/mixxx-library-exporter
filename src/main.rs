@@ -3,13 +3,13 @@ use clap::Parser;
 
 use cli::CliArguments;
 use log::LevelFilter;
+use mixxx::storage::track::get_tracks;
 use pretty_env_logger::env_logger::Builder;
-use storage::track::get_tracks;
 
 mod cli;
 mod db;
-mod models;
-mod storage;
+/// All mixxx facing logic.
+mod mixxx;
 
 #[tokio::main]
 async fn main() -> Result<()> {

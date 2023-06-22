@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use sqlx::SqliteConnection;
 
-use crate::models::playlist::Playlist;
+use crate::mixxx::schema::playlist::Playlist;
 
 pub async fn get_playlists(con: &mut SqliteConnection) -> Result<Vec<Playlist>> {
     let playlists = sqlx::query_as!(

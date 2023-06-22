@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use sqlx::SqliteConnection;
 
-use crate::models::cue::Cue;
+use crate::mixxx::schema::cue::Cue;
 
 pub async fn get_track_cues(con: &mut SqliteConnection, track_id: i64) -> Result<Vec<Cue>> {
     let cues = sqlx::query_as!(

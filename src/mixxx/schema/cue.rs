@@ -1,6 +1,7 @@
+use serde_derive::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-#[derive(FromRow, Debug, Clone)]
+#[derive(Serialize, Deserialize, FromRow, Debug, Clone)]
 pub struct Cue {
     pub id: i64,
     pub track_id: i64,

@@ -1,3 +1,5 @@
+use std::{fs::File, io::Write};
+
 use anyhow::Result;
 use clap::Parser;
 
@@ -26,8 +28,11 @@ async fn main() -> Result<()> {
 
     let mut con = db::new_connection().await?;
     let library = read_library(&mut con).await?;
+    dbg!(&library);
 
-    dbg!(library);
+    let library_json = serde_json::to_string(&library)?;
+    let mut file = File::create("/tmp/library.json")?;
+    file.write_all(library_json.as_bytes())?;
 
     Ok(())
 }

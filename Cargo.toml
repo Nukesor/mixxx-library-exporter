@@ -1,14 +1,16 @@
 [package]
-name = "rust-boilerplate"
+name = "mixxx-dj-converter"
 version = "0.1.0"
 edition = "2021"
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MIT"
+authors = ["Arne Beer <contact@arne.beer>"]
+homepage = "https://github.com/nukesor/pueue"
+repository = "https://github.com/nukesor/pueue"
 
 [dependencies]
 anyhow = "1"
 better-panic = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
-chrono-tz = "0.8.1"
 clap = { version = "4", features = ["derive", "cargo"] }
 crossbeam-channel = "0.5"
 dotenv = "0.15"

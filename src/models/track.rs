@@ -20,3 +20,11 @@ pub struct Track {
     pub channels: Option<i64>,
     pub datetime_added: Option<String>,
 }
+
+#[derive(FromRow, Debug, Clone)]
+pub struct TrackLocation {
+    pub id: i64,
+    pub location: Option<String>,
+    pub filename: Option<String>,
+    pub directory: Option<String>,
+}

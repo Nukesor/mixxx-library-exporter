@@ -3,10 +3,13 @@ use clap::Parser;
 
 use cli::CliArguments;
 use log::LevelFilter;
-use mixxx::storage::track::get_tracks;
 use pretty_env_logger::env_logger::Builder;
 
+use crate::mixxx::aggregator::read_library;
+
+/// Commandline argument parsing
 mod cli;
+/// Low-level DB related logic
 mod db;
 /// All mixxx facing logic.
 mod mixxx;
@@ -22,9 +25,9 @@ async fn main() -> Result<()> {
     init_app(opt.verbose)?;
 
     let mut con = db::new_connection().await?;
-    let tracks = get_tracks(&mut con).await?;
+    let library = read_library(&mut con).await?;
 
-    dbg!(tracks);
+    dbg!(library);
 
     Ok(())
 }

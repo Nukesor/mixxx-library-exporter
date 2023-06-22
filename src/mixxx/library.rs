@@ -2,10 +2,11 @@ use std::{collections::BTreeMap, path::PathBuf};
 
 use chrono::NaiveDateTime;
 
+#[derive(Debug, Clone)]
 pub struct Library {
-    tracks: BTreeMap<usize, Track>,
-    playlists: Vec<Playlist>,
-    crates: Vec<Crate>,
+    pub tracks: BTreeMap<usize, Track>,
+    pub playlists: Vec<Playlist>,
+    pub crates: Vec<Crate>,
 }
 
 #[derive(Debug, Clone)]

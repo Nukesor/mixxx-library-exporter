@@ -1,21 +1,8 @@
-# Rust Project Boilerplate
+# Mixxx Library Exporter
 
-This repository is a mini rust project that contains all important libraries and setup steps I find myself re-using all the time.
+The project aims to export the Mixxx library into other formats.
+The main motivation behind this, is to be able to use your Mixxx library with proprietary DJ Controllers such as Pioneer or Denon.
 
-## Commandline
+## Configuration
 
-- `clap` for commandline interfaces.
-- `pretty_env_logger` for logging.
-- `dotenv` For configuration via environment.
-
-## Code helper
-
-- `strum` for better enums.
-- `chrono` because there's always time involved.
-- `serde` & `serde_derive` for serialization.
-
-## Error handling
-
-- `anyhow` for generic error handling.
-- `thiserror` for custom errors.
-- `better-panic` for nice stack traces.
+The configuration happens via a file at `$XDG_CONFIG/`

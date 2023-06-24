@@ -20,6 +20,8 @@ mod config;
 mod db;
 /// All mixxx facing logic.
 mod mixxx;
+/// Rekordbox related logic.
+mod rekordbox;
 
 #[tokio::main]
 async fn main() -> Result<()> {

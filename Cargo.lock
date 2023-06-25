@@ -945,6 +945,7 @@ dependencies = [
  "dotenv",
  "log",
  "path-slash",
+ "percent-encoding",
  "pretty_assertions",
  "pretty_env_logger",
  "quick-xml",
@@ -957,6 +958,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "tokio",
+ "url",
 ]
 
 [[package]]

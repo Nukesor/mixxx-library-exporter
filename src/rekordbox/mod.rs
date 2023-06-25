@@ -1,4 +1,8 @@
-use anyhow::Result;
+use std::path::PathBuf;
+
+use anyhow::{Context, Result};
+use percent_encoding::{percent_encode, NON_ALPHANUMERIC};
+use url::Url;
 
 use self::schema::{
     library::Library,
@@ -121,13 +125,13 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
 
 #[cfg(not(target_os = "windows"))]
 pub fn get_track_location(_config: &Config, mixxx_location: TrackLocation) -> Result<String> {
-    // All rekordbox tracks seem to be prefixed with this.
-    let mut path = String::from("file://localhost");
-
     // Since we're on unix, we can just use the actual path.
-    path.push_str(&mixxx_location.location);
+    let path = PathBuf::from(&mixxx_location.location);
 
-    Ok(path)
+    // The path needs to be url-encoded, since it's basically an URL.
+    let encoded_path = encode_path(&path)?;
+
+    Ok(encoded_path)
 }
 
 /// Windows needs a bit of special handling, since we assume that we're running Mixxx on a unix
@@ -135,9 +139,8 @@ pub fn get_track_location(_config: &Config, mixxx_location: TrackLocation) -> Re
 /// -> We have to convert unix-style paths to Windows style paths.
 #[cfg(target_os = "windows")]
 pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Result<String> {
-    use anyhow::{bail, Context};
+    use anyhow::bail;
     use path_slash::PathBufExt;
-    use std::path::PathBuf;
 
     let unix_path = PathBuf::from_slash(&mixxx_location.location);
     let source_root = PathBuf::from_slash(&config.source_library_root);
@@ -155,9 +158,48 @@ pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Res
     // Add the relative path from the library root to the actual track.
     path = path.join(relative_path);
 
-    // All rekordbox tracks seem to be prefixed with this.
-    let mut rekordbox_path = String::from("file://localhost");
-    rekordbox_path.push_str(&path.to_string_lossy());
+    let encoded_path = encode_path(&path)?;
+    Ok(encoded_path)
+}
 
-    Ok(rekordbox_path)
+/// the inner workings of get_track_location that takes any pathbuf and converts it to a file URI.
+fn encode_path(path: &PathBuf) -> Result<String> {
+    // All rekordbox tracks are URLs. Since we're on the local machine, we start with this path.
+    let mut url = Url::parse("file:///localhost/").unwrap();
+
+    let dir_path = path
+        .parent()
+        .context("File doesn't have a parent directory: {path:?}")?;
+    let file_name = path
+        .file_name()
+        .context("File doesn't have a filename: {path:?}")?;
+
+    // Add all parts of the directory containing the actual track, one-by-one.
+    for path_part in dir_path.into_iter() {
+        if path_part == "/" {
+            continue;
+        }
+
+        // Url-Encode the directory
+        let mut encoded_part =
+            percent_encode(path_part.to_string_lossy().as_bytes(), NON_ALPHANUMERIC).to_string();
+        // Add a `/` to it, since we want to add at least one other element.
+        encoded_part.push('/');
+
+        // Join it to the url
+        url = url
+            .join(&encoded_part)
+            .context("Failed to parse path part: {path_part:?}")?;
+    }
+
+    // Add the url-encoded filename
+    let encoded_filename =
+        percent_encoding::percent_encode(&file_name.to_string_lossy().as_bytes(), NON_ALPHANUMERIC)
+            .to_string();
+    url = url
+        .join(&encoded_filename)
+        .context("Failed to parse path part: {path_part:?}")?;
+
+    // The path needs to be url-encoded, since it's basically an URL.
+    Ok(url.as_str().to_owned())
 }

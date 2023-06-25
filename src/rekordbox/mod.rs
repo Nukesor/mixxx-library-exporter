@@ -186,7 +186,7 @@ fn encode_path(path: &PathBuf) -> Result<String> {
 
     // Add all parts of the directory containing the actual track, one-by-one.
     for path_part in dir_path.into_iter() {
-        if path_part == "/" {
+        if path_part == "/" || path_part == "\\" {
             continue;
         }
 

@@ -1,6 +1,7 @@
 use std::{collections::BTreeMap, path::PathBuf};
 
 use anyhow::{Context, Result};
+use chrono::DateTime;
 use sqlx::SqliteConnection;
 
 use super::library::{
@@ -37,17 +38,24 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<BTreeMap<usize, Tr
         };
 
         let technical_info = TrackTechnicalInfo {
-            duration: raw_track.duration.unwrap(),
-            bitrate: raw_track.duration.unwrap(),
-            samplerate: raw_track
-                .duration
-                .context("Couldn't find samplerate for track")?,
-            bpm: raw_track.bpm.context("Couldn't find bpm for track")?,
+            duration: raw_track.duration,
+            bitrate: raw_track.bitrate,
+            samplerate: raw_track.samplerate,
+            bpm: raw_track.bpm,
             key: raw_track.key,
             replaygain: raw_track.replaygain,
             replaygain_peak: raw_track.replaygain_peak,
             source_synchronized_ms: raw_track.source_synchronized_ms,
         };
+
+        // This particular field is returned as a string rather than as a Datetime.
+        // We have to parse it ourselve.
+        let datetime_added = DateTime::parse_from_rfc3339(&raw_track.datetime_added)
+            .context(format!(
+                "Failed to parse datetime_added: {}",
+                raw_track.datetime_added
+            ))?
+            .naive_local();
 
         let metadata = TrackMetadata {
             rating: raw_track.rating,
@@ -55,7 +63,7 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<BTreeMap<usize, Tr
             played: raw_track.played.unwrap_or_default() > 0,
             timesplayed: raw_track.timesplayed,
             deleted: raw_track.mixxx_deleted.unwrap_or_default() > 0,
-            datetime_added: raw_track.datetime_added,
+            datetime_added,
             last_played_at: raw_track.last_played_at,
         };
 
@@ -94,10 +102,20 @@ pub async fn read_playlists(
 
     let raw_playlists = storage::playlist::get_playlists(con).await?;
     for raw_playlist in raw_playlists.into_iter() {
-        let track_ids = storage::playlist::get_playlist_tracks(con, raw_playlist.id).await?;
+        let track_ids: Vec<usize> = storage::playlist::get_playlist_tracks(con, raw_playlist.id)
+            .await?
+            .into_iter()
+            .map(|id| {
+                id.try_into()
+                    .expect("Got track id that doesn't fit into usize")
+            })
+            .collect();
 
         let playlist = Playlist {
-            id: raw_playlist.id,
+            id: raw_playlist
+                .id
+                .try_into()
+                .expect("Got playlist id that doesn't fit into usize"),
             name: raw_playlist.name.unwrap(),
             position: raw_playlist.position.unwrap().try_into().unwrap(),
             hidden: raw_playlist.hidden > 0,
@@ -120,10 +138,20 @@ pub async fn read_crates(
 
     let raw_crates = storage::mcrate::get_crates(con).await?;
     for raw_crate in raw_crates.into_iter() {
-        let track_ids = storage::mcrate::get_crate_tracks(con, raw_crate.id).await?;
+        let track_ids: Vec<usize> = storage::mcrate::get_crate_tracks(con, raw_crate.id)
+            .await?
+            .into_iter()
+            .map(|id| {
+                id.try_into()
+                    .expect("Got track id that doesn't fit into usize")
+            })
+            .collect();
 
         let mcrate = Crate {
-            id: raw_crate.id,
+            id: raw_crate
+                .id
+                .try_into()
+                .expect("Got crate id that doesn't fit into usize"),
             name: raw_crate.name,
             hidden: !(raw_crate.show.unwrap() > 0),
             count: raw_crate.count.unwrap(),

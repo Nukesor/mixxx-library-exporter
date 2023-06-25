@@ -9,6 +9,7 @@ use clap::Parser;
 use cli::CliArguments;
 use log::{info, LevelFilter};
 use pretty_env_logger::env_logger::Builder;
+use rekordbox::schema::create_rekordbox_schema;
 
 use crate::{config::Config, mixxx::aggregator::read_library};
 
@@ -54,7 +55,25 @@ async fn main() -> Result<()> {
         let library_json = serde_json::to_string(&library)?;
         let mut file = File::create(json_target_file)?;
         file.write_all(library_json.as_bytes())?;
+
+        return Ok(());
     }
+
+    let rekordbox_library = create_rekordbox_schema(library);
+
+    // Get the target path for the json file.
+    let xml_target_file = config.target_directory().join("mixxx_rekordbox_export.xml");
+
+    // Remove any existing xml file
+    if xml_target_file.exists() {
+        info!("Removing existing xml library file at: {xml_target_file:?}");
+        remove_file(&xml_target_file)?;
+    }
+
+    // Export the library.
+    let rekordbox_xml = serde_xml_rs::ser::to_string(&rekordbox_library)?;
+    let mut file = File::create(xml_target_file)?;
+    file.write_all(rekordbox_xml.as_bytes())?;
 
     Ok(())
 }

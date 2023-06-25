@@ -41,8 +41,8 @@ pub struct TrackLocation {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TrackTechnicalInfo {
     pub duration: f64,
-    pub bitrate: f64,
-    pub samplerate: f64,
+    pub bitrate: i64,
+    pub samplerate: i64,
     pub bpm: f64,
     pub key: String,
     pub replaygain: f64,
@@ -56,26 +56,26 @@ pub struct TrackMetadata {
     pub played: bool,
     pub timesplayed: i64,
     pub deleted: bool,
-    pub datetime_added: String,
+    pub datetime_added: NaiveDateTime,
     pub last_played_at: Option<NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Playlist {
-    pub id: i64,
+    pub id: usize,
     pub name: String,
     pub position: usize,
     pub hidden: bool,
     pub date_created: NaiveDateTime,
     pub date_modified: NaiveDateTime,
-    pub track_ids: Vec<i64>,
+    pub track_ids: Vec<usize>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Crate {
-    pub id: i64,
+    pub id: usize,
     pub name: String,
     pub count: i64,
     pub hidden: bool,
-    pub track_ids: Vec<i64>,
+    pub track_ids: Vec<usize>,
 }

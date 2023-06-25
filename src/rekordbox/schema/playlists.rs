@@ -9,8 +9,10 @@ pub struct Playlists {
 
 impl Playlists {
     /// Create a new node with the type of PlaylistRoot
-    pub fn new(playlists_root: PlaylistsRoot) -> Self {
-        Playlists { playlists_root }
+    pub fn new(playlists: Vec<Playlist>) -> Self {
+        Playlists {
+            playlists_root: PlaylistsRoot::new(playlists),
+        }
     }
 }
 
@@ -27,11 +29,11 @@ pub struct PlaylistsRoot {
 
 impl PlaylistsRoot {
     /// Create a new node with the type of PlaylistRoot
-    pub fn new(count: usize, playlists: Vec<Playlist>) -> Self {
+    pub fn new(playlists: Vec<Playlist>) -> Self {
         PlaylistsRoot {
             r#type: 0,
             name: "ROOT".into(),
-            count,
+            count: playlists.len(),
             playlists,
         }
     }
@@ -51,10 +53,10 @@ pub struct Playlist {
 
 impl Playlist {
     /// Create a new node with the type of Playlist
-    pub fn new(tracks: Vec<PlaylistTrack>) -> Self {
+    pub fn new(name: String, tracks: Vec<PlaylistTrack>) -> Self {
         Playlist {
             r#type: 1,
-            name: "ROOT".into(),
+            name,
             key_type: 0,
             entries: tracks.len(),
             tracks,

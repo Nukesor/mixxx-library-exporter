@@ -175,7 +175,7 @@ pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Res
 /// the inner workings of get_track_location that takes any pathbuf and converts it to a file URI.
 fn encode_path(path: &PathBuf) -> Result<String> {
     // All rekordbox tracks are URLs. Since we're on the local machine, we start with this path.
-    let mut url = String::from("file:///localhost/");
+    let mut url = String::from("file://localhost/");
 
     let dir_path = path
         .parent()

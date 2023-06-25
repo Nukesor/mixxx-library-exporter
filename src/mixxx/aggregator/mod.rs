@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, path::PathBuf};
+use std::collections::BTreeMap;
 
 use anyhow::{Context, Result};
 use chrono::DateTime;
@@ -32,9 +32,9 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<BTreeMap<usize, Tr
         let cues = storage::cue::get_track_cues(con, raw_track.id).await?;
 
         let location = TrackLocation {
-            location: PathBuf::from(location.location.unwrap()),
+            location: location.location.unwrap(),
             filename: location.filename.unwrap(),
-            directory: PathBuf::from(location.directory.unwrap()),
+            directory: location.directory.unwrap(),
         };
 
         let technical_info = TrackTechnicalInfo {

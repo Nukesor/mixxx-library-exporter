@@ -33,6 +33,11 @@ strum = "0.24"
 strum_macros = "0.24"
 tokio = { version = "1.28", features = ["rt-multi-thread", "time", "macros"] }
 
+# --- Platform specific dependencies ---
+# Windows
+#[target.'cfg(windows)'.dependencies]
+path-slash = "0.2"
+
 [dev-dependencies]
 pretty_assertions = "1"
 rstest = "0.16"

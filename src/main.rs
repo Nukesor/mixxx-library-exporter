@@ -35,6 +35,7 @@ async fn main() -> Result<()> {
     init_app(opt.verbose)?;
 
     let config = Config::read().context("Failed to read config file")?;
+    config.validate()?;
 
     // Read the mixxx library and convert it into our own clean format.
     let mut con = db::new_connection(&config.mixxx_db).await?;
@@ -59,7 +60,7 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    let rekordbox_library = mixxx_to_rekordbox(library);
+    let rekordbox_library = mixxx_to_rekordbox(&config, library)?;
 
     // Get the target path for the json file.
     let xml_target_file = config.target_directory().join("mixxx_rekordbox_export.xml");

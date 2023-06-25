@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, path::PathBuf};
+use std::collections::BTreeMap;
 
 use chrono::NaiveDateTime;
 use serde_derive::{Deserialize, Serialize};
@@ -33,9 +33,9 @@ pub struct Track {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TrackLocation {
-    pub location: PathBuf,
+    pub location: String,
     pub filename: String,
-    pub directory: PathBuf,
+    pub directory: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

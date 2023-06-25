@@ -1,71 +1,22 @@
-use crate::mixxx::library::Library as MixxxLibrary;
+use anyhow::Result;
 
 use self::schema::{
     library::Library,
     playlists::{Playlist, PlaylistTrack, Playlists},
     tracks::{translate_key, translate_rating, Cue, Tempo, Track, TrackContent, TrackKind, Tracks},
 };
+use crate::{
+    config::Config,
+    mixxx::library::{Library as MixxxLibrary, Track as MixxxTrack, TrackLocation},
+};
 
 pub mod schema;
 
-pub fn mixxx_to_rekordbox(mixxx_library: MixxxLibrary) -> Library {
+pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Result<Library> {
     // Go through all mixxx tracks and create the respective rekordbox tracks.
     let mut rekordbox_tracks = Vec::new();
     for (_, mixxx_track) in mixxx_library.tracks {
-        // At first, we have to create the inner content of the entry field.
-        let mut track_inner = Vec::new();
-        // First up, create the track's tempo info.
-        track_inner.push(TrackContent::Tempo(Tempo {
-            inizio: 0.0,
-            bpm: mixxx_track.technical_info.bpm as u32,
-            // TODO: There doesn't seem to be a Mixxx equivalent.
-            // Either remove it or leave it empty.
-            // The rekordbox format is: "4/4"
-            metro: "".into(),
-            // TODO: No idea what this is or where to get it from in Mixxx.
-            battito: "1".into(),
-        }));
-
-        // Now create the cue points.
-        for cue in mixxx_track.cues {
-            // TODO: Check where the start can be set
-            track_inner.push(TrackContent::Cue(Cue::new(cue.label, 10.0, cue.r#type)))
-        }
-
-        let rekordbox_track = Track {
-            track_id: mixxx_track.id.to_string(),
-            name: mixxx_track.title,
-            artist: mixxx_track.artist,
-            composer: mixxx_track.composer,
-            album: mixxx_track.album.unwrap_or_default(),
-            grouping: String::new(),
-            genre: mixxx_track.genre.unwrap_or_default(),
-            kind: TrackKind::from_string(mixxx_track.filetype),
-            size: 0.to_string(),
-            total_time: mixxx_track.technical_info.duration as u32,
-            disc_number: 1,
-            track_number: mixxx_track.tracknumber.unwrap_or_default(),
-            year: mixxx_track
-                .year
-                .parse::<u16>()
-                .map(|i| i.to_string())
-                .unwrap_or_default(),
-            average_bpm: mixxx_track.technical_info.bpm.to_string(),
-            date_added: mixxx_track.metadata.datetime_added.format("%F").to_string(),
-            bit_rate: mixxx_track.technical_info.bitrate,
-            sample_rate: mixxx_track.technical_info.bitrate,
-            comments: mixxx_track.comment.unwrap_or_default(),
-            play_count: mixxx_track.metadata.timesplayed,
-            rating: translate_rating(mixxx_track.metadata.rating),
-            location: "Lolol path".into(), // TODO
-            remixer: "".into(),
-            tonality: translate_key(&mixxx_track.technical_info.key).into(),
-            label: "".into(),
-            mix: "".into(),
-
-            values: track_inner,
-        };
-
+        let rekordbox_track = convert_track(config, mixxx_track)?;
         rekordbox_tracks.push(rekordbox_track);
     }
 
@@ -103,8 +54,110 @@ pub fn mixxx_to_rekordbox(mixxx_library: MixxxLibrary) -> Library {
         rekordbox_playlists.push(Playlist::new(mixxx_crate.name, crate_tracks));
     }
 
-    Library::new(
+    Ok(Library::new(
         Tracks::new(rekordbox_tracks),
         Playlists::new(rekordbox_playlists),
-    )
+    ))
+}
+
+/// Convert a single mixxx track into a rekordbox style track format.
+pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> {
+    // At first, we have to create the inner content of the entry field.
+    let mut track_inner = Vec::new();
+    // First up, create the track's tempo info.
+    track_inner.push(TrackContent::Tempo(Tempo {
+        inizio: 0.0,
+        bpm: mixxx_track.technical_info.bpm as u32,
+        // TODO: There doesn't seem to be a Mixxx equivalent.
+        // Either remove it or leave it empty.
+        // The rekordbox format is: "4/4"
+        metro: "".into(),
+        // TODO: No idea what this is or where to get it from in Mixxx.
+        battito: "1".into(),
+    }));
+
+    // Now create the cue points.
+    for cue in mixxx_track.cues {
+        // TODO: Check where the start can be set
+        track_inner.push(TrackContent::Cue(Cue::new(cue.label, 10.0, cue.r#type)))
+    }
+
+    let location = get_track_location(config, mixxx_track.location)?;
+
+    Ok(Track {
+        track_id: mixxx_track.id.to_string(),
+        name: mixxx_track.title,
+        artist: mixxx_track.artist,
+        composer: mixxx_track.composer,
+        album: mixxx_track.album.unwrap_or_default(),
+        grouping: String::new(),
+        genre: mixxx_track.genre.unwrap_or_default(),
+        kind: TrackKind::from_string(mixxx_track.filetype),
+        size: 0.to_string(),
+        total_time: mixxx_track.technical_info.duration as u32,
+        disc_number: 1,
+        track_number: mixxx_track.tracknumber.unwrap_or_default(),
+        year: mixxx_track
+            .year
+            .parse::<u16>()
+            .map(|i| i.to_string())
+            .unwrap_or_default(),
+        average_bpm: mixxx_track.technical_info.bpm.to_string(),
+        date_added: mixxx_track.metadata.datetime_added.format("%F").to_string(),
+        bit_rate: mixxx_track.technical_info.bitrate,
+        sample_rate: mixxx_track.technical_info.bitrate,
+        comments: mixxx_track.comment.unwrap_or_default(),
+        play_count: mixxx_track.metadata.timesplayed,
+        rating: translate_rating(mixxx_track.metadata.rating),
+        location,
+        remixer: "".into(),
+        tonality: translate_key(&mixxx_track.technical_info.key).into(),
+        label: "".into(),
+        mix: "".into(),
+
+        values: track_inner,
+    })
+}
+
+#[cfg(not(target_os = "windows"))]
+pub fn get_track_location(_config: &Config, mixxx_location: TrackLocation) -> Result<String> {
+    // All rekordbox tracks seem to be prefixed with this.
+    let mut path = String::from("file://localhost");
+
+    // Since we're on unix, we can just use the actual path.
+    path.push_str(&mixxx_location.location);
+
+    Ok(path)
+}
+
+/// Windows needs a bit of special handling, since we assume that we're running Mixxx on a unix
+/// filesystem.
+/// -> We have to convert unix-style paths to Windows style paths.
+#[cfg(target_os = "windows")]
+pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Result<String> {
+    use anyhow::{bail, Context};
+    use path_slash::PathBufExt;
+    use std::path::PathBuf;
+
+    let unix_path = PathBuf::from_slash(&mixxx_location.location);
+    let source_root = PathBuf::from_slash(&config.source_library_root);
+
+    if !unix_path.starts_with(&source_root) {
+        bail!("Mixxx path '{unix_path:?}' is not in source_library_root {source_root:?}");
+    }
+
+    let relative_path = unix_path
+        .strip_prefix(&source_root)
+        .context("Failed to strip prefix {source_root:?} from '{unix_path:?}'")?;
+
+    // Start at the target library root
+    let mut path = PathBuf::from(&config.target_library_root);
+    // Add the relative path from the library root to the actual track.
+    path = path.join(relative_path);
+
+    // All rekordbox tracks seem to be prefixed with this.
+    let mut rekordbox_path = String::from("file://localhost");
+    rekordbox_path.push_str(&path.to_string_lossy());
+
+    Ok(rekordbox_path)
 }

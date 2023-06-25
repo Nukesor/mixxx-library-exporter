@@ -71,7 +71,7 @@ async fn main() -> Result<()> {
     }
 
     // Export the library.
-    let rekordbox_xml = serde_xml_rs::ser::to_string(&rekordbox_library)?;
+    let rekordbox_xml = quick_xml::se::to_string(&rekordbox_library)?;
     let mut file = File::create(xml_target_file)?;
     file.write_all(rekordbox_xml.as_bytes())?;
 

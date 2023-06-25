@@ -2,8 +2,8 @@ use serde_derive::{Deserialize, Serialize};
 
 /// This is the playlists tag that contains all playlist nodes.
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "PLAYLISTS")]
 pub struct Playlists {
+    #[serde(rename = "NODE")]
     playlists_root: PlaylistsRoot,
 }
 
@@ -19,11 +19,14 @@ impl Playlists {
 /// This is the representation of the "root folder".
 /// This node must always exist and is the very first node.
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "NODE", rename_all = "camelCase")]
 pub struct PlaylistsRoot {
+    #[serde(rename = "@Type")]
     r#type: u32,
+    #[serde(rename = "@Name")]
     name: String,
+    #[serde(rename = "@Count")]
     count: usize,
+    #[serde(rename = "NODE")]
     playlists: Vec<Playlist>,
 }
 
@@ -42,12 +45,16 @@ impl PlaylistsRoot {
 /// The representation of a single Playlist.
 /// A playlist contains multiple `TRACK` elements with TrackIds that point to actual tracks.
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "NODE", rename_all = "camelCase")]
 pub struct Playlist {
+    #[serde(rename = "@Type")]
     r#type: u32,
+    #[serde(rename = "@Name")]
     name: String,
+    #[serde(rename = "@KeyType")]
     key_type: u32,
+    #[serde(rename = "@Entries")]
     entries: usize,
+    #[serde(rename = "TRACK")]
     tracks: Vec<PlaylistTrack>,
 }
 
@@ -65,8 +72,8 @@ impl Playlist {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "TRACK", rename_all = "camelCase")]
 pub struct PlaylistTrack {
+    #[serde(rename = "@Key")]
     key: usize,
 }
 

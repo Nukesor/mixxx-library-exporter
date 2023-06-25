@@ -2,9 +2,11 @@ use serde_derive::{Deserialize, Serialize};
 
 /// This is the parent object that contains all tracks in this library.
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "COLLECTION", rename_all = "camelCase")]
+#[serde(rename = "COLLECTION")]
 pub struct Tracks {
+    #[serde(rename = "@Entries")]
     entries: usize,
+    #[serde(rename = "TRACK")]
     tracks: Vec<Track>,
 }
 
@@ -19,33 +21,56 @@ impl Tracks {
 
 /// A single track in the library.
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "TRACK", rename_all = "camelCase")]
 pub struct Track {
-    #[serde(rename = "TrackID")]
+    #[serde(rename = "@TrackID")]
     pub track_id: String,
+    #[serde(rename = "@Name")]
     pub name: String,
+    #[serde(rename = "@Artist")]
     pub artist: String,
+    #[serde(rename = "@Composer")]
     pub composer: String,
+    #[serde(rename = "@Album")]
     pub album: String,
+    #[serde(rename = "@Grouping")]
     pub grouping: String,
+    #[serde(rename = "@Genre")]
     pub genre: String,
+    #[serde(rename = "@Kind")]
     pub kind: TrackKind,
+    #[serde(rename = "@Size")]
     pub size: String,
+    #[serde(rename = "@TotalTime")]
     pub total_time: u32,
+    #[serde(rename = "@DiscNumber")]
     pub disc_number: u32,
+    #[serde(rename = "@TrackNumber")]
     pub track_number: String,
+    #[serde(rename = "@Year")]
     pub year: String,
+    #[serde(rename = "@AverageBpm")]
     pub average_bpm: String,
+    #[serde(rename = "@DateAdded")]
     pub date_added: String,
+    #[serde(rename = "@BitRate")]
     pub bit_rate: i64,
+    #[serde(rename = "@SampleRate")]
     pub sample_rate: i64,
+    #[serde(rename = "@Comments")]
     pub comments: String,
+    #[serde(rename = "@PlayCount")]
     pub play_count: i64,
+    #[serde(rename = "@Rating")]
     pub rating: i64,
+    #[serde(rename = "@Location")]
     pub location: String,
+    #[serde(rename = "@Remixer")]
     pub remixer: String,
+    #[serde(rename = "@Tonality")]
     pub tonality: String,
+    #[serde(rename = "@Label")]
     pub label: String,
+    #[serde(rename = "@Mix")]
     pub mix: String,
 
     // There can be multiple `Cue` entries, which is why we have to declare
@@ -57,28 +82,39 @@ pub struct Track {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum TrackContent {
+    #[serde(rename = "TEMPO")]
     Tempo(Tempo),
+    #[serde(rename = "POSITION_MARK")]
     Cue(Cue),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "TEMPO", rename_all = "camelCase")]
 pub struct Tempo {
+    #[serde(rename = "@Inizio")]
     pub inizio: f64,
+    #[serde(rename = "@Bpm")]
     pub bpm: u32,
+    #[serde(rename = "@Metro")]
     pub metro: String,
+    #[serde(rename = "@Battito")]
     pub battito: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename = "POSITION_MARK", rename_all = "camelCase")]
 pub struct Cue {
+    #[serde(rename = "@Name")]
     pub name: String,
+    #[serde(rename = "@Type")]
     pub r#type: u32,
+    #[serde(rename = "@Start")]
     pub start: f64,
+    #[serde(rename = "@Num")]
     pub num: i64,
+    #[serde(rename = "@Red")]
     pub red: u8,
+    #[serde(rename = "@Green")]
     pub green: u8,
+    #[serde(rename = "@Blue")]
     pub blue: u8,
 }
 

@@ -6,11 +6,11 @@ use super::tracks::Tracks;
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename = "DJ_PLAYLISTS")]
 pub struct Library {
-    #[serde(rename = "Version")]
+    #[serde(rename = "@Version")]
     version: String,
     #[serde(rename = "PRODUCT")]
     product: Product,
-
+    #[serde(rename = "COLLECTION")]
     tracks: Tracks,
     #[serde(rename = "PLAYLISTS")]
     playlists: Playlists,
@@ -28,10 +28,12 @@ impl Library {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
 pub struct Product {
+    #[serde(rename = "@Name")]
     name: String,
+    #[serde(rename = "@Version")]
     version: String,
+    #[serde(rename = "@Company")]
     company: String,
 }
 

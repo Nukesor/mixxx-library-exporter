@@ -9,7 +9,7 @@ use clap::Parser;
 use cli::CliArguments;
 use log::{info, LevelFilter};
 use pretty_env_logger::env_logger::Builder;
-use rekordbox::schema::create_rekordbox_schema;
+use rekordbox::mixxx_to_rekordbox;
 
 use crate::{config::Config, mixxx::aggregator::read_library};
 
@@ -59,7 +59,7 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    let rekordbox_library = create_rekordbox_schema(library);
+    let rekordbox_library = mixxx_to_rekordbox(library);
 
     // Get the target path for the json file.
     let xml_target_file = config.target_directory().join("mixxx_rekordbox_export.xml");

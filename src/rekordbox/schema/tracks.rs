@@ -61,7 +61,7 @@ pub struct Track {
     #[serde(rename = "@PlayCount")]
     pub play_count: i64,
     #[serde(rename = "@Rating")]
-    pub rating: i64,
+    pub rating: u8,
     #[serde(rename = "@Location")]
     pub location: String,
     #[serde(rename = "@Remixer")]
@@ -151,31 +151,51 @@ impl TrackKind {
 
 /// Many programs use something called the Camelot wheel to categorize tonal keys.
 /// Rekordbox uses a different notation, which we have to map to.
-///
-/// A = 11B
-/// Ab/G# = 4B
-/// Am = 8A
-/// B = 1B
-/// Bb = 6B
-/// Bbm/A#m = 3A
-/// Bm = 10A
-/// C = 8B
-/// C#m/Dbm = 12A
-/// Cm = 5A
-/// D = 10B
-/// Db = 3B
-/// Dm = 7A
-/// E = 12B
-/// Eb/D# = 5B
-/// Ebm = 2A
-/// Em = 9A
-/// F = 7B
-/// F#m = 11A
-/// Fm = 4A
-/// G = 9B
-/// G#m/Abm = 1A
-/// Gb/F# = 2B
-/// Gm = 6A
-pub fn translate_key(_mixxx_key: &str) -> &'static str {
-    "Am"
+pub fn translate_key(mixxx_key: &str) -> &'static str {
+    match mixxx_key {
+        "11B" => "A",
+        "4B" => "Ab/G#",
+        "8A" => "Am",
+        "1B" => "B",
+        "6B" => "Bb",
+        "3A" => "Bbm/A#m",
+        "10A" => "Bm",
+        "8B" => "C",
+        "12A" => "C#m/Dbm",
+        "5A" => "Cm",
+        "10B" => "D",
+        "3B" => "Db",
+        "7A" => "Dm",
+        "12B" => "E",
+        "5B" => "Eb/D#",
+        "2A" => "Ebm",
+        "9A" => "Em",
+        "7B" => "F",
+        "11A" => "F#m",
+        "4A" => "Fm",
+        "9B" => "G",
+        "1A" => "G#m/Abm",
+        "2B" => "Gb/F#",
+        "6A" => "Gm",
+        _ => "",
+    }
+}
+
+/// Rekordbox uses a byte based rating format.
+pub fn translate_rating(rating: i64) -> u8 {
+    match rating {
+        0 => 0,
+        1 => 51,
+        2 => 102,
+        3 => 153,
+        4 => 204,
+        5 => 255,
+        _ => {
+            if rating > 5 {
+                255
+            } else {
+                0
+            }
+        }
+    }
 }

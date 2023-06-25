@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 use anyhow::Result;
 use confique::Config as Confique;
 use log::{debug, warn};
+use serde_derive::Deserialize;
 use shellexpand::tilde;
 
 #[derive(Confique)]
@@ -11,6 +12,22 @@ pub struct Config {
     pub mixxx_db: String,
     /// The directory to which the library will be exported to.
     target_directory: PathBuf,
+
+    /// This program only works, if all music files are located in a single directory.
+    /// This directory should then
+    source_library_root: PathBuf,
+    /// The
+    target_library_root: PathBuf,
+
+    /// The filesystem of the target system on which rekordbox will be executed.
+    /// We need this to build the correct path format, which differs between different OSs.
+    target_filesystem: TargetFs,
+}
+
+#[derive(Deserialize, Debug)]
+pub enum TargetFs {
+    Windows,
+    Unix,
 }
 
 /// Little helper which expands a given path's `~` characters to a fully qualified path.

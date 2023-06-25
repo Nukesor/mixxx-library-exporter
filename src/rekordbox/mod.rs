@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
-use percent_encoding::{percent_encode, NON_ALPHANUMERIC};
+use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use url::Url;
 
 use self::schema::{
@@ -13,6 +13,17 @@ use crate::{
     config::Config,
     mixxx::library::{Library as MixxxLibrary, Track as MixxxTrack, TrackLocation},
 };
+
+pub const PATH: &AsciiSet = &CONTROLS
+    .add(b' ')
+    .add(b'"')
+    .add(b'#')
+    .add(b'<')
+    .add(b'>')
+    .add(b'?')
+    .add(b'`')
+    .add(b'{')
+    .add(b'}');
 
 pub mod schema;
 
@@ -182,7 +193,7 @@ fn encode_path(path: &PathBuf) -> Result<String> {
 
         // Url-Encode the directory
         let mut encoded_part =
-            percent_encode(path_part.to_string_lossy().as_bytes(), NON_ALPHANUMERIC).to_string();
+            percent_encode(path_part.to_string_lossy().as_bytes(), PATH).to_string();
         // Add a `/` to it, since we want to add at least one other element.
         encoded_part.push('/');
 
@@ -194,8 +205,7 @@ fn encode_path(path: &PathBuf) -> Result<String> {
 
     // Add the url-encoded filename
     let encoded_filename =
-        percent_encoding::percent_encode(&file_name.to_string_lossy().as_bytes(), NON_ALPHANUMERIC)
-            .to_string();
+        percent_encoding::percent_encode(&file_name.to_string_lossy().as_bytes(), PATH).to_string();
     url = url
         .join(&encoded_filename)
         .context("Failed to parse path part: {path_part:?}")?;

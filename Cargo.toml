@@ -29,7 +29,6 @@ sqlx = { version = "0.6", features = [
   "macros",
   "chrono",
 ] }
-url = "2"
 percent-encoding = "2"
 strum = "0.24"
 strum_macros = "0.24"

@@ -2,7 +2,6 @@ use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
-use url::Url;
 
 use self::schema::{
     library::Library,
@@ -176,7 +175,7 @@ pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Res
 /// the inner workings of get_track_location that takes any pathbuf and converts it to a file URI.
 fn encode_path(path: &PathBuf) -> Result<String> {
     // All rekordbox tracks are URLs. Since we're on the local machine, we start with this path.
-    let mut url = Url::parse("file:///localhost/").unwrap();
+    let mut url = String::from("file:///localhost/");
 
     let dir_path = path
         .parent()
@@ -198,17 +197,13 @@ fn encode_path(path: &PathBuf) -> Result<String> {
         encoded_part.push('/');
 
         // Join it to the url
-        url = url
-            .join(&encoded_part)
-            .context("Failed to parse path part: {path_part:?}")?;
+        url.push_str(&encoded_part);
     }
 
     // Add the url-encoded filename
     let encoded_filename =
         percent_encoding::percent_encode(&file_name.to_string_lossy().as_bytes(), PATH).to_string();
-    url = url
-        .join(&encoded_filename)
-        .context("Failed to parse path part: {path_part:?}")?;
+    url.push_str(&encoded_filename);
 
     // The path needs to be url-encoded, since it's basically an URL.
     Ok(url.as_str().to_owned())

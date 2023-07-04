@@ -10,7 +10,7 @@ pub async fn get_track_cues(con: &mut SqliteConnection, track_id: i64) -> Result
         SELECT
             id,
             track_id,
-            type,
+            type as cue_type,
             position,
             length,
             hotcue,

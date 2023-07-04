@@ -79,22 +79,49 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
     // At first, we have to create the inner content of the entry field.
     let mut track_inner = Vec::new();
     // First up, create the track's tempo info.
-    track_inner.push(TrackContent::Tempo(Tempo {
+    // We don't immediately add this, since we only find the `inizio` of the track via the cues.
+    let mut tempo = Tempo {
         inizio: 0.0,
-        bpm: mixxx_track.technical_info.bpm as u32,
+        bpm: mixxx_track.technical_info.bpm,
         // TODO: There doesn't seem to be a Mixxx equivalent.
         // Either remove it or leave it empty.
         // The rekordbox format is: "4/4"
         metro: "".into(),
         // TODO: No idea what this is or where to get it from in Mixxx.
         battito: "1".into(),
-    }));
+    };
 
     // Now create the cue points.
     for cue in mixxx_track.cues {
-        // TODO: Check where the start can be set
-        track_inner.push(TrackContent::Cue(Cue::new(cue.label, 10.0, cue.r#type)))
+        match cue.cue_type {
+            // 6 - Basically the same as `2`, not sure why it exists.
+            // 7 - absolute start and end of track
+            // 8 - start and end of track
+            6 | 7 | 8 => continue,
+            // This cue type indicates the start of the track
+            2 => {
+                let track_start = convert_cue_position(cue.position as f64, tempo.bpm);
+                tempo.inizio = track_start;
+            }
+            // This is a normal cue point.
+            1 => {
+                let position = convert_cue_position(cue.position as f64, tempo.bpm);
+                // Don't check cues with negative hotcues.
+                if cue.hotcue == -1 {
+                    continue;
+                }
+
+                track_inner.push(TrackContent::Cue(Cue::new(
+                    "".to_string(),
+                    position,
+                    cue.hotcue,
+                )));
+            }
+            _ => continue,
+        }
     }
+
+    track_inner.push(TrackContent::Tempo(tempo));
 
     let location = get_track_location(config, mixxx_track.location)?;
 
@@ -207,4 +234,18 @@ fn encode_path(path: &PathBuf) -> Result<String> {
 
     // The path needs to be url-encoded, since it's basically an URL.
     Ok(url.as_str().to_owned())
+}
+
+/// The mixxx database saves cue points in a pretty weird format.
+/// Cuepoints are saved as absolute timestamps, as if the track would be played with 195 bpm.
+/// The value is `second * 100_000` -> 22 seconds would be 2_200_000.
+///
+/// To get it to rekordbox, we have to take that timestamp and convert it to an absolute second
+/// based f64, which depends on the actual bpm that's specified in the `TEMPO` section.
+fn convert_cue_position(cue_position: f64, target_bpm: f64) -> f64 {
+    // Adjust the value based on the target bpm.
+    let cue_position = cue_position * 195.0 / target_bpm;
+
+    // Convert it to seconds instead of 1/100_000 of a second.
+    cue_position / 100_000.0
 }

@@ -93,7 +93,7 @@ pub struct Tempo {
     #[serde(rename = "@Inizio")]
     pub inizio: f64,
     #[serde(rename = "@Bpm")]
-    pub bpm: u32,
+    pub bpm: f64,
     #[serde(rename = "@Metro")]
     pub metro: String,
     #[serde(rename = "@Battito")]
@@ -137,6 +137,8 @@ impl Cue {
 pub enum TrackKind {
     #[serde(rename = "MP3 File")]
     Mp3,
+    #[serde(rename = "flac")]
+    Flac,
 }
 
 impl TrackKind {

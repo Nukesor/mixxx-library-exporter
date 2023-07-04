@@ -101,12 +101,12 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
             2 | 7 | 8 => continue,
             // This cue type indicates the start of the track
             6 => {
-                let track_start = convert_cue_position(cue.position as f64, tempo.bpm);
+                let track_start = convert_cue_position(cue.position as f64, 88_200);
                 tempo.inizio = track_start;
             }
             // This is a normal cue point.
             1 => {
-                let position = convert_cue_position(cue.position as f64, tempo.bpm);
+                let position = convert_cue_position(cue.position as f64, 88_200);
                 // Don't check cues with negative hotcues.
                 if cue.hotcue == -1 {
                     continue;
@@ -237,16 +237,11 @@ fn encode_path(path: &PathBuf) -> Result<String> {
     Ok(url.as_str().to_owned())
 }
 
-/// The mixxx database saves cue points in a pretty weird format.
-/// Cuepoints are saved as absolute timestamps, as if the track would be played with 195 bpm.
-/// The value is `second * 100_000` -> 22 seconds would be 2_200_000.
+/// Cuepoints are saved as absolute `actual_timestamp_seconds * sample_rate`.
+/// For some reason, this doesn't use the sample_rate of the track, but rather 88_200 Hz.
+/// TODO: Find out how the sample rate is determined!
 ///
-/// To get it to rekordbox, we have to take that timestamp and convert it to an absolute second
-/// based f64, which depends on the actual bpm that's specified in the `TEMPO` section.
-fn convert_cue_position(cue_position: f64, target_bpm: f64) -> f64 {
-    // Adjust the value based on the target bpm.
-    let cue_position = cue_position * 195.0 / target_bpm;
-
-    // Convert it to seconds instead of 1/100_000 of a second.
-    cue_position / 100_000.0
+/// To get the actual position, we just devide by the sample_rate.
+fn convert_cue_position(cue_position: f64, sample_rate: u64) -> f64 {
+    cue_position / sample_rate as f64
 }

@@ -91,11 +91,14 @@ pub enum TrackContent {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Tempo {
     // We make this a string, as the Rekordbox format seems to always
-    // only use 3 decimal places. We round and format in the conversion logic.
+    // only use 3 decimal places.
+    // We round and format in the conversion logic.
     #[serde(rename = "@Inizio")]
     pub inizio: String,
+    // BPM are expected to be floats with to decimal places
+    // We round and format in the conversion logic.
     #[serde(rename = "@Bpm")]
-    pub bpm: f64,
+    pub bpm: String,
     #[serde(rename = "@Metro")]
     pub metro: String,
     #[serde(rename = "@Battito")]

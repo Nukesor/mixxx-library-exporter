@@ -82,7 +82,7 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
     // We don't immediately add this, since we only find the `inizio` of the track via the cues.
     let mut tempo = Tempo {
         inizio: "0.000".to_string(),
-        bpm: mixxx_track.technical_info.bpm,
+        bpm: format!("{:.2}", mixxx_track.technical_info.bpm),
         // TODO: There doesn't seem to be a Mixxx equivalent.
         // The expected rekordbox format is: "4/4"
         // We just roll with a 4/4 for now

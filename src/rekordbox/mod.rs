@@ -147,7 +147,7 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
         average_bpm: mixxx_track.technical_info.bpm.to_string(),
         date_added: mixxx_track.metadata.datetime_added.format("%F").to_string(),
         bit_rate: mixxx_track.technical_info.bitrate,
-        sample_rate: mixxx_track.technical_info.bitrate,
+        sample_rate: mixxx_track.technical_info.samplerate,
         comments: mixxx_track.comment.unwrap_or_default(),
         play_count: mixxx_track.metadata.timesplayed,
         rating: translate_rating(mixxx_track.metadata.rating),

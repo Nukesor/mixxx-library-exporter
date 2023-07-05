@@ -95,12 +95,12 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
     // Now create the cue points.
     for cue in mixxx_track.cues {
         match cue.cue_type {
-            // 6 - Basically the same as `2`, not sure why it exists.
+            // 2 - The position of the "Cue" cue point.
             // 7 - absolute start and end of track
             // 8 - start and end of track
-            6 | 7 | 8 => continue,
+            2 | 7 | 8 => continue,
             // This cue type indicates the start of the track
-            2 => {
+            6 => {
                 let track_start = convert_cue_position(cue.position as f64, tempo.bpm);
                 tempo.inizio = track_start;
             }

@@ -95,7 +95,7 @@ pub struct Tempo {
     // We round and format in the conversion logic.
     #[serde(rename = "@Inizio")]
     pub inizio: String,
-    // BPM are expected to be floats with to decimal places
+    // BPM are expected to be floats with two decimal places
     // We round and format in the conversion logic.
     #[serde(rename = "@Bpm")]
     pub bpm: String,
@@ -110,9 +110,11 @@ pub struct Cue {
     #[serde(rename = "@Name")]
     pub name: String,
     #[serde(rename = "@Type")]
-    pub r#type: u32,
+    pub cue_type: u32,
+    // BPM are expected to be floats with three decimal places
+    // We round and format in the conversion logic.
     #[serde(rename = "@Start")]
-    pub start: f64,
+    pub start: String,
     #[serde(rename = "@Num")]
     pub num: i64,
     #[serde(rename = "@Red")]
@@ -127,8 +129,8 @@ impl Cue {
     pub fn new(name: String, start: f64, num: i64) -> Self {
         Cue {
             name,
-            r#type: 0,
-            start,
+            cue_type: 0,
+            start: format!("{start:.3}"),
             num,
             red: 40,
             green: 226,

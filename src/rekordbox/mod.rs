@@ -84,10 +84,11 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
         inizio: 0.0,
         bpm: mixxx_track.technical_info.bpm,
         // TODO: There doesn't seem to be a Mixxx equivalent.
-        // Either remove it or leave it empty.
-        // The rekordbox format is: "4/4"
-        metro: "".into(),
+        // The expected rekordbox format is: "4/4"
+        // We just roll with a 4/4 for now
+        metro: "4/4".into(),
         // TODO: No idea what this is or where to get it from in Mixxx.
+        // Most tracks seem to have a "1" in here.
         battito: "1".into(),
     };
 

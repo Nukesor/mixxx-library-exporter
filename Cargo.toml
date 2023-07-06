@@ -6,6 +6,7 @@ license = "MIT"
 authors = ["Arne Beer <contact@arne.beer>"]
 homepage = "https://github.com/nukesor/pueue"
 repository = "https://github.com/nukesor/pueue"
+default-run = "mixxx-library-exporter"
 
 [dependencies]
 anyhow = "1"
@@ -34,6 +35,7 @@ strum = "0.24"
 strum_macros = "0.24"
 tokio = { version = "1.28", features = ["rt-multi-thread", "time", "macros"] }
 prost = "0.11"
+prost-build = "0.11"
 
 # --- Platform specific dependencies ---
 # Windows
@@ -43,6 +45,3 @@ path-slash = "0.2"
 [dev-dependencies]
 pretty_assertions = "1"
 rstest = "0.16"
-
-[build-dependencies]
-prost-build = "0.11"

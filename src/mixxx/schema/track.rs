@@ -29,7 +29,7 @@ pub struct Track {
     pub timesplayed: i64,
     pub rating: i64,
     pub key: String,
-    //pub beats: BLOB,
+    pub beats: Option<Vec<u8>>,
     //pub beats_version: TEXT,
     //pub bpm_lock: i64,
     //pub beats_sub_version: String,

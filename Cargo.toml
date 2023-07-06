@@ -33,6 +33,7 @@ percent-encoding = "2"
 strum = "0.24"
 strum_macros = "0.24"
 tokio = { version = "1.28", features = ["rt-multi-thread", "time", "macros"] }
+prost = "0.11"
 
 # --- Platform specific dependencies ---
 # Windows
@@ -42,3 +43,6 @@ path-slash = "0.2"
 [dev-dependencies]
 pretty_assertions = "1"
 rstest = "0.16"
+
+[build-dependencies]
+prost-build = "0.11"

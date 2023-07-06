@@ -34,7 +34,7 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<Vec<Track>> {
             timesplayed as "timesplayed!",
             rating as "rating!",
             key as "key!",
-            -- beats,
+            beats,
             -- beats_version,
             -- bpm_lock,
             -- beats_sub_version,

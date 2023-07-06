@@ -30,7 +30,7 @@ pub struct Track {
     pub rating: i64,
     pub key: String,
     pub beats: Option<Vec<u8>>,
-    //pub beats_version: TEXT,
+    pub beats_version: Option<String>,
     //pub bpm_lock: i64,
     //pub beats_sub_version: String,
     //pub keys: Vec<u8>,

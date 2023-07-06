@@ -10,7 +10,10 @@ use self::schema::{
 };
 use crate::{
     config::Config,
-    mixxx::library::{Library as MixxxLibrary, Track as MixxxTrack, TrackLocation},
+    mixxx::{
+        helper::convert_mixxx_position,
+        library::{Library as MixxxLibrary, Track as MixxxTrack, TrackLocation},
+    },
 };
 
 pub const PATH: &AsciiSet = &CONTROLS
@@ -78,10 +81,20 @@ pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Resul
 pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> {
     // At first, we have to create the inner content of the entry field.
     let mut track_inner = Vec::new();
+
+    // Determine the start of the track.
+    // If mixxx didn't run an analysis yet, this might be empty.
+    // In that case, we default to the very start of the audio file.
+    let start_of_track = mixxx_track
+        .technical_info
+        .get_start_of_beatgrid()?
+        .unwrap_or_default()
+        .to_string();
+
     // First up, create the track's tempo info.
     // We don't immediately add this, since we only find the `inizio` of the track via the cues.
-    let mut tempo = Tempo {
-        inizio: "0.000".to_string(),
+    let tempo = Tempo {
+        inizio: start_of_track,
         bpm: format!("{:.2}", mixxx_track.technical_info.bpm),
         // TODO: There doesn't seem to be a Mixxx equivalent.
         // The expected rekordbox format is: "4/4"
@@ -96,17 +109,13 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
     for cue in mixxx_track.cues {
         match cue.cue_type {
             // 2 - The position of the "Cue" cue point.
+            // 6 - The start of the track.
             // 7 - absolute start and end of track
             // 8 - start and end of track
-            2 | 7 | 8 => continue,
-            // This cue type indicates the start of the track
-            6 => {
-                let track_start = convert_cue_position(cue.position as f64, 88_200);
-                tempo.inizio = format!("{track_start:.3}");
-            }
+            2 | 6 | 7 | 8 => continue,
             // This is a normal cue point.
             1 => {
-                let position = convert_cue_position(cue.position as f64, 88_200);
+                let position = convert_mixxx_position(cue.position as f64, 88_200);
                 // Don't check cues with negative hotcues.
                 if cue.hotcue == -1 {
                     continue;
@@ -235,13 +244,4 @@ fn encode_path(path: &PathBuf) -> Result<String> {
 
     // The path needs to be url-encoded, since it's basically an URL.
     Ok(url.as_str().to_owned())
-}
-
-/// Cuepoints are saved as absolute `actual_timestamp_seconds * sample_rate`.
-/// For some reason, this doesn't use the sample_rate of the track, but rather 88_200 Hz.
-/// TODO: Find out how the sample rate is determined!
-///
-/// To get the actual position, we just devide by the sample_rate.
-fn convert_cue_position(cue_position: f64, sample_rate: u64) -> f64 {
-    cue_position / sample_rate as f64
 }

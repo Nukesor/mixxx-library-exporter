@@ -42,6 +42,8 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<BTreeMap<usize, Tr
             bitrate: raw_track.bitrate,
             samplerate: raw_track.samplerate,
             bpm: raw_track.bpm,
+            beats: raw_track.beats,
+            beats_version: raw_track.beats_version,
             key: raw_track.key,
             replaygain: raw_track.replaygain,
             replaygain_peak: raw_track.replaygain_peak,

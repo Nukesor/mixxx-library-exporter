@@ -16,6 +16,8 @@ use crate::{
     },
 };
 
+const ALL_PLAYLIST_NAME: &'static str = "all";
+
 pub const PATH: &AsciiSet = &CONTROLS
     .add(b' ')
     .add(b'"')
@@ -32,10 +34,13 @@ pub mod schema;
 pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Result<Library> {
     // Go through all mixxx tracks and create the respective rekordbox tracks.
     let mut rekordbox_tracks = Vec::new();
-    for (_, mixxx_track) in mixxx_library.tracks {
-        let rekordbox_track = convert_track(config, mixxx_track)?;
+    for (_, mixxx_track) in &mixxx_library.tracks {
+        let rekordbox_track = convert_track(config, mixxx_track.clone())?;
         rekordbox_tracks.push(rekordbox_track);
     }
+
+    // Check if a playlist with the name "all" exists.
+    let mut all_exists = false;
 
     let mut rekordbox_playlists = Vec::new();
     // Go through all playlists and create respective rekordbox playlists
@@ -51,7 +56,22 @@ pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Resul
             .map(|key| PlaylistTrack::new(*key))
             .collect();
 
+        if mixxx_playlist.name == ALL_PLAYLIST_NAME {
+            all_exists = true;
+        }
+
         rekordbox_playlists.push(Playlist::new(mixxx_playlist.name, playlist_tracks));
+    }
+
+    // Create a playlist that contains all tracks, if it doesn't already exist.
+    if !all_exists {
+        let playlist_tracks = mixxx_library
+            .tracks
+            .iter()
+            .map(|(id, _)| PlaylistTrack::new(*id))
+            .collect();
+
+        rekordbox_playlists.push(Playlist::new(ALL_PLAYLIST_NAME.into(), playlist_tracks));
     }
 
     // Recordbox doesn't have the concept of crates, which is why we treat them

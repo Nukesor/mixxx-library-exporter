@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Result};
 use confique::Config as Confique;
-use log::{debug, warn};
+use log::{debug, info, warn};
 use shellexpand::tilde;
 
 #[derive(Confique)]
@@ -45,6 +45,7 @@ impl Config {
             if !config_path.exists() {
                 warn!("Couldn't find config at path: {config_path:?}!");
             } else {
+                info!("Found config at: {config_path:?}");
                 config_builder = config_builder.file(&config_path);
             }
         }
@@ -56,6 +57,7 @@ impl Config {
             if !document_path.exists() {
                 warn!("Couldn't find config at path: {document_path:?}!");
             } else {
+                info!("Found config at: {document_path:?}");
                 config_builder = config_builder.file(&document_path);
             }
         }
@@ -67,6 +69,7 @@ impl Config {
             if !home_path.exists() {
                 warn!("Couldn't find config at path: {home_path:?}!");
             } else {
+                info!("Found config at: {home_path:?}");
                 config_builder = config_builder.file(&home_path);
             }
         }

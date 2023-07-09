@@ -6,23 +6,13 @@ use std::{
 use anyhow::{Context, Result};
 use clap::Parser;
 
-use cli::CliArguments;
 use log::{info, LevelFilter};
 use pretty_env_logger::env_logger::Builder;
-use rekordbox::mixxx_to_rekordbox;
 
-use crate::{config::Config, mixxx::aggregator::read_library};
-
-/// Commandline argument parsing
-mod cli;
-/// Configuration file.
-mod config;
-/// Low-level DB related logic
-mod db;
-/// All mixxx facing logic.
-mod mixxx;
-/// Rekordbox related logic.
-mod rekordbox;
+use mixxx_library_exporter::{
+    cli::CliArguments, config::Config, db, mixxx::aggregator::read_library,
+    rekordbox::mixxx_to_rekordbox,
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {

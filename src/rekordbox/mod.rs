@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
@@ -16,7 +16,7 @@ use crate::{
     },
 };
 
-const ALL_PLAYLIST_NAME: &'static str = "all";
+const ALL_PLAYLIST_NAME: &str = "all";
 
 pub const PATH: &AsciiSet = &CONTROLS
     .add(b' ')
@@ -34,7 +34,7 @@ pub mod schema;
 pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Result<Library> {
     // Go through all mixxx tracks and create the respective rekordbox tracks.
     let mut rekordbox_tracks = Vec::new();
-    for (_, mixxx_track) in &mixxx_library.tracks {
+    for mixxx_track in mixxx_library.tracks.values() {
         let rekordbox_track = convert_track(config, mixxx_track.clone())?;
         rekordbox_tracks.push(rekordbox_track);
     }
@@ -67,8 +67,8 @@ pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Resul
     if !all_exists {
         let playlist_tracks = mixxx_library
             .tracks
-            .iter()
-            .map(|(id, _)| PlaylistTrack::new(*id))
+            .keys()
+            .map(|id| PlaylistTrack::new(*id))
             .collect();
 
         rekordbox_playlists.push(Playlist::new(ALL_PLAYLIST_NAME.into(), playlist_tracks));
@@ -230,7 +230,7 @@ pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Res
 }
 
 /// the inner workings of get_track_location that takes any pathbuf and converts it to a file URI.
-fn encode_path(path: &PathBuf) -> Result<String> {
+fn encode_path(path: &Path) -> Result<String> {
     // All rekordbox tracks are URLs. Since we're on the local machine, we start with this path.
     let mut url = String::from("file://localhost/");
 
@@ -242,7 +242,7 @@ fn encode_path(path: &PathBuf) -> Result<String> {
         .context("File doesn't have a filename: {path:?}")?;
 
     // Add all parts of the directory containing the actual track, one-by-one.
-    for path_part in dir_path.into_iter() {
+    for path_part in dir_path.iter() {
         if path_part == "/" || path_part == "\\" {
             continue;
         }
@@ -259,7 +259,7 @@ fn encode_path(path: &PathBuf) -> Result<String> {
 
     // Add the url-encoded filename
     let encoded_filename =
-        percent_encoding::percent_encode(&file_name.to_string_lossy().as_bytes(), PATH).to_string();
+        percent_encoding::percent_encode(file_name.to_string_lossy().as_bytes(), PATH).to_string();
     url.push_str(&encoded_filename);
 
     // The path needs to be url-encoded, since it's basically an URL.

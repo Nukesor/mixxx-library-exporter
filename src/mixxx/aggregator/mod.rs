@@ -155,7 +155,7 @@ pub async fn read_crates(
                 .try_into()
                 .expect("Got crate id that doesn't fit into usize"),
             name: raw_crate.name,
-            hidden: !(raw_crate.show.unwrap() > 0),
+            hidden: raw_crate.show.unwrap() < 0,
             count: raw_crate.count.unwrap(),
             track_ids,
         };

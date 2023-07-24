@@ -28,7 +28,12 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<BTreeMap<usize, Tr
 
     let raw_tracks = storage::track::get_tracks(con).await?;
     for raw_track in raw_tracks.into_iter() {
-        let location = storage::track::get_track_location(con, raw_track.id).await?;
+        let Some(location_id) = raw_track.location else {
+            log::debug!("No location for track {}", raw_track.id);
+            continue;
+        };
+
+        let location = storage::track::get_track_location(con, location_id).await?;
         let cues = storage::cue::get_track_cues(con, raw_track.id).await?;
 
         let location = TrackLocation {

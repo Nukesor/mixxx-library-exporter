@@ -55,7 +55,6 @@ pub struct TrackTechnicalInfo {
     pub key: String,
     pub replaygain: f64,
     pub replaygain_peak: f64,
-    pub source_synchronized_ms: Option<i64>,
 }
 
 impl TrackTechnicalInfo {
@@ -101,7 +100,6 @@ pub struct TrackMetadata {
     pub timesplayed: i64,
     pub deleted: bool,
     pub datetime_added: NaiveDateTime,
-    pub last_played_at: Option<NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

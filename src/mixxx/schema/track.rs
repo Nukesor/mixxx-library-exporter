@@ -1,4 +1,3 @@
-use chrono::NaiveDateTime;
 use sqlx::FromRow;
 
 #[derive(FromRow, Debug, Clone)]
@@ -45,8 +44,6 @@ pub struct Track {
     pub replaygain_peak: f64,
     //pub tracktotal: TEXT DEFAULT '//',
     //pub color: Option<i64>,
-    pub last_played_at: Option<NaiveDateTime>,
-    pub source_synchronized_ms: Option<i64>,
 }
 #[derive(FromRow, Debug, Clone)]
 pub struct TrackLocation {

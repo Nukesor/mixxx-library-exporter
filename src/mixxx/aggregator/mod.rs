@@ -47,7 +47,6 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<BTreeMap<usize, Tr
             key: raw_track.key,
             replaygain: raw_track.replaygain,
             replaygain_peak: raw_track.replaygain_peak,
-            source_synchronized_ms: raw_track.source_synchronized_ms,
         };
 
         // This particular field is returned as a string rather than as a Datetime.
@@ -66,7 +65,6 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<BTreeMap<usize, Tr
             timesplayed: raw_track.timesplayed,
             deleted: raw_track.mixxx_deleted.unwrap_or_default() > 0,
             datetime_added,
-            last_played_at: raw_track.last_played_at,
         };
 
         let track = Track {

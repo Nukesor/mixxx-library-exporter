@@ -47,11 +47,9 @@ pub async fn get_tracks(con: &mut SqliteConnection) -> Result<Vec<Track>> {
             -- coverart_type,
             -- coverart_location,
             -- coverart_hash,
-            replaygain_peak as "replaygain_peak!",
+            replaygain_peak as "replaygain_peak!"
             -- tracktotal,
-            --color,
-            last_played_at,
-            source_synchronized_ms
+            -- color
         FROM library
         "#
     )

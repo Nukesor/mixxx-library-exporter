@@ -33,7 +33,7 @@ sqlx = { version = "0.7", features = [
 percent-encoding = "2"
 strum = "0.25"
 strum_macros = "0.25"
-tokio = { version = "1.35", features = ["rt-multi-thread", "time", "macros"] }
+tokio = { version = "1.36", features = ["rt-multi-thread", "time", "macros"] }
 prost = "0.12"
 prost-build = "0.12"
 

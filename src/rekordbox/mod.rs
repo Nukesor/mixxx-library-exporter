@@ -190,21 +190,9 @@ pub fn convert_track(config: &Config, mixxx_track: MixxxTrack) -> Result<Track> 
     })
 }
 
-#[cfg(not(target_os = "windows"))]
-pub fn get_track_location(_config: &Config, mixxx_location: TrackLocation) -> Result<String> {
-    // Since we're on unix, we can just use the actual path.
-    let path = PathBuf::from(&mixxx_location.location);
-
-    // The path needs to be url-encoded, since it's basically an URL.
-    let encoded_path = encode_path(&path)?;
-
-    Ok(encoded_path)
-}
-
 /// Windows needs a bit of special handling, since we assume that we're running Mixxx on a unix
 /// filesystem.
 /// -> We have to convert unix-style paths to Windows style paths.
-#[cfg(target_os = "windows")]
 pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Result<String> {
     use anyhow::bail;
     use path_slash::PathBufExt;

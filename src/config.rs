@@ -90,20 +90,20 @@ impl Config {
         }
 
         // Make sure the target_library_root actually exists.
-        if !self.target_library_root.exists() {
-            bail!(
-                "Target library root doesn't seem to exist: '{:?}'",
-                self.target_library_root.to_string_lossy()
-            )
-        }
+        // if !self.target_library_root.exists() {
+        //     bail!(
+        //         "Target library root doesn't seem to exist: '{:?}'",
+        //         self.target_library_root.to_string_lossy()
+        //     )
+        // }
 
         // Make sure the target_library_root is absolute.
-        if !self.target_library_root.is_absolute() {
-            bail!(
-                "target_library_root has to be an absolute path: '{:?}'",
-                self.target_library_root.to_string_lossy()
-            )
-        }
+        //if !self.target_library_root.is_absolute() {
+        //    bail!(
+        //        "target_library_root has to be an absolute path: '{:?}'",
+        //        self.target_library_root.to_string_lossy()
+        //    )
+        //}
 
         Ok(())
     }

@@ -1,4 +1,4 @@
 mixxx_db: /home/nuke/Syncthing/Mixxx/mixxx_data/mixxxdb.sqlite
-target_directory: /home/nuke/Syncthing/Mixxx/
+target_directory: /home/nuke/Syncthing/Mixxx
 source_library_root: /home/nuke/Syncthing/Mixxx/music
-target_library_root: C://Users/nuke/Syncthing/Mixxx/music
+target_library_root: C://Users/enrar/Mixxx/music

@@ -50,6 +50,11 @@ pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Resul
             continue;
         }
 
+        // Not sure what these are about, but ignore them.
+        if mixxx_playlist.name.starts_with("historyPlaceholder") {
+            continue;
+        }
+
         let playlist_tracks = mixxx_playlist
             .track_ids
             .iter()

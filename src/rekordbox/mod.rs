@@ -202,7 +202,7 @@ pub fn get_track_location(config: &Config, mixxx_location: TrackLocation) -> Res
     use anyhow::bail;
     use path_slash::PathBufExt;
 
-    let unix_path = PathBuf::from_slash(&mixxx_location.location);
+    let unix_path = PathBuf::from_slash(mixxx_location.location);
     let source_root = PathBuf::from_slash(&config.source_library_root);
 
     if !unix_path.starts_with(&source_root) {

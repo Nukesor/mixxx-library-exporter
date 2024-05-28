@@ -44,4 +44,4 @@ path-slash = "0.2"
 
 [dev-dependencies]
 pretty_assertions = "1"
-rstest = "0.18"
+rstest = "0.19"

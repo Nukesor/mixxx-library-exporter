@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use sqlx::FromRow;
 
 #[derive(FromRow, Debug, Clone)]
@@ -45,6 +47,7 @@ pub struct Track {
     //pub tracktotal: TEXT DEFAULT '//',
     //pub color: Option<i64>,
 }
+
 #[derive(FromRow, Debug, Clone)]
 pub struct TrackLocation {
     pub id: i64,

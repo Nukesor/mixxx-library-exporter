@@ -13,13 +13,13 @@ anyhow = "1"
 better-panic = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive", "cargo"] }
-confique = "0.2"
+confique = { version = "0.3", features = ["toml", "yaml"] }
 crossbeam-channel = "0.5"
-dirs = "5"
+dirs = "6"
 dotenv = "0.15"
 log = "0.4"
 pretty_env_logger = "0.5"
-quick-xml = { version = "0.36", features = ["serialize"] }
+quick-xml = { version = "0.37", features = ["serialize"] }
 serde = "1"
 serde_derive = "1"
 serde_json = "1"
@@ -33,7 +33,7 @@ sqlx = { version = "0.8", features = [
 percent-encoding = "2"
 strum = "0.26"
 strum_macros = "0.26"
-tokio = { version = "1.39", features = ["rt-multi-thread", "time", "macros"] }
+tokio = { version = "1.43", features = ["rt-multi-thread", "time", "macros"] }
 prost = "0.13"
 prost-build = "0.13"
 
@@ -44,4 +44,4 @@ path-slash = "0.2"
 
 [dev-dependencies]
 pretty_assertions = "1"
-rstest = "0.22"
+rstest = "0.24"

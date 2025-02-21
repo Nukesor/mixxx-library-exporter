@@ -1,7 +1,6 @@
 use serde_derive::{Deserialize, Serialize};
 
-use super::playlists::Playlists;
-use super::tracks::Tracks;
+use super::{playlists::Playlists, tracks::Tracks};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename = "DJ_PLAYLISTS")]

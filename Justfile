@@ -1,35 +1,24 @@
-set dotenv-load := true
+# If you change anything in here, make sure to also adjust the lint CI job!
+lint:
+    cargo +nightly fmt --all -- --check
+    taplo format --check
+    cargo clippy --tests --workspace -- -D warnings
 
-run:
-    cargo run
+format:
+    just ensure-command taplo
+    cargo +nightly fmt
+    taplo format
 
-# Query the relevant raw data for a given track
-track_info track_title:
-    #!/bin/zsh
-    source .env
-    sqlite3 $DATABASE_PATH \
-        -init "$SQLITE_CONFIG" \
-        -header "
-        SELECT
-            id, artist, title, duration, bitrate, samplerate, cuepoint, bpm, channels, filetype,
-            replaygain, rating, key, bpm_lock, replaygain_peak, tracktotal, last_played_at, source_synchronized_ms
-        FROM library
-        WHERE
-            title='{{ track_title }}'
-    "
+# Ensures that one or more required commands are installed
+ensure-command +command:
+    #!/usr/bin/env bash
+    set -euo pipefail
 
-cue_info track_title:
-    #!/bin/zsh
-    source .env
-    sqlite3 $DATABASE_PATH \
-        -init "$SQLITE_CONFIG" \
-        -header "
-        SELECT
-            library.artist,
-            library.title,
-            cues.*
-            FROM cues
-        JOIN library ON library.id = cues.track_id
-        WHERE
-            library.title='{{ track_title }}'
-    "
+    read -r -a commands <<< "{{ command }}"
+
+    for cmd in "${commands[@]}"; do
+        if ! command -v "$cmd" > /dev/null 2>&1 ; then
+            printf "Couldn't find required executable '%s'\n" "$cmd" >&2
+            exit 1
+        fi
+    done

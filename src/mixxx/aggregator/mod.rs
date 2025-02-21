@@ -5,7 +5,13 @@ use chrono::DateTime;
 use sqlx::SqliteConnection;
 
 use super::library::{
-    Crate, Library, Playlist, Track, TrackLocation, TrackMetadata, TrackTechnicalInfo,
+    Crate,
+    Library,
+    Playlist,
+    Track,
+    TrackLocation,
+    TrackMetadata,
+    TrackTechnicalInfo,
 };
 use crate::mixxx::storage;
 

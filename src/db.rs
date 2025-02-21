@@ -1,5 +1,5 @@
 use anyhow::Result;
-use sqlx::{sqlite::SqliteConnection, Connection};
+use sqlx::{Connection, sqlite::SqliteConnection};
 
 pub async fn new_connection(db_path: &str) -> Result<SqliteConnection> {
     let conn = SqliteConnection::connect(db_path).await?;

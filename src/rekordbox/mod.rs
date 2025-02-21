@@ -1,12 +1,12 @@
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
-use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 
 use self::schema::{
     library::Library,
     playlists::{Playlist, PlaylistTrack, Playlists},
-    tracks::{translate_key, translate_rating, Cue, Tempo, Track, TrackContent, TrackKind, Tracks},
+    tracks::{Cue, Tempo, Track, TrackContent, TrackKind, Tracks, translate_key, translate_rating},
 };
 use crate::{
     config::Config,

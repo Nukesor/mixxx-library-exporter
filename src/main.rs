@@ -1,13 +1,12 @@
 use std::{
-    fs::{remove_file, File},
+    fs::{File, remove_file},
     io::Write,
 };
 
 use anyhow::{Context, Result};
 use clap::Parser;
-
 use cli::CliArguments;
-use log::{info, LevelFilter};
+use log::{LevelFilter, info};
 use pretty_env_logger::env_logger::Builder;
 use rekordbox::mixxx_to_rekordbox;
 

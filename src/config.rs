@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use confique::Config as Confique;
 use log::{debug, info, warn};
 use shellexpand::tilde;

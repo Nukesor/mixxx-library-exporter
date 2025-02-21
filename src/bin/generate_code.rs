@@ -8,6 +8,8 @@ fn main() {
 
     // Set the OUT_DIR environment variable, which is otherwise set by cargo when executing
     // the `build.rs`.
-    set_var("OUT_DIR", target_dir.to_string_lossy().to_string());
+    unsafe {
+        set_var("OUT_DIR", target_dir.to_string_lossy().to_string());
+    }
     prost_build::compile_protos(&["src/mixxx/proto/beats.proto"], &["src/mixxx/proto/"]).unwrap();
 }

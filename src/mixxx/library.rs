@@ -1,15 +1,12 @@
-use std::collections::BTreeMap;
-use std::io::Cursor;
+use std::{collections::BTreeMap, io::Cursor};
 
 use anyhow::{Context, Result};
 use chrono::NaiveDateTime;
 use prost::Message;
 use serde_derive::{Deserialize, Serialize};
 
+use super::schema::{beats::BeatGrid, cue::Cue};
 use crate::mixxx::helper::convert_mixxx_position;
-
-use super::schema::beats::BeatGrid;
-use super::schema::cue::Cue;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Library {

@@ -20,6 +20,11 @@ pub struct Config {
     /// This is the path to the library root in the target OS.
     /// For Windows this would look something like "C:/Users/your_user/Music/Mixxx"
     pub target_library_root: PathBuf,
+
+    /// This program only works, if all music files are located in a single directory.
+    /// This is the path to the library root in the target OS.
+    /// For Windows this would look something like "C:/Users/your_user/Music/Mixxx"
+    pub create_all_playlist: bool,
 }
 
 /// Little helper which expands a given path's `~` characters to a fully qualified path.

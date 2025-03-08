@@ -69,7 +69,7 @@ pub fn mixxx_to_rekordbox(config: &Config, mixxx_library: MixxxLibrary) -> Resul
     }
 
     // Create a playlist that contains all tracks, if it doesn't already exist.
-    if !all_exists {
+    if !all_exists && config.create_all_playlist {
         let playlist_tracks = mixxx_library
             .tracks
             .keys()
